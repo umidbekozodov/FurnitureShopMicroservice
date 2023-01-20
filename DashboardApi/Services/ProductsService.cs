@@ -21,20 +21,23 @@ public class ProductsService : BackgroundService
     private void HandleQueue()
     {
         var consumer = new EventingBasicConsumer(_channel);
+        consumer.Received += ConsumerOnReceived();
+        _channel.BasicConsume(consumer, "product_ad", false);
+    }
 
-        consumer.Received += (sender, args) =>
+    private EventHandler<BasicDeliverEventArgs> ConsumerOnReceived()
+    {
+        return (sender, args) =>
         {
             var productJson = Encoding.UTF8.GetString(args.Body.ToArray());
             var product = Newtonsoft.Json.JsonConvert.DeserializeObject<ProductQueue>(productJson);
             SaveProduct(product);
         };
-
-        _channel.BasicConsume(consumer, "product_ad", false);
     }
 
     private void SaveProduct(ProductQueue productQueue)
     {
-        _context.Productlar!.Add(new Product()
+        _context.Productlar?.Add(new Product()
         {
             ProductId = productQueue.Id,
             ProductCount = productQueue.Count,

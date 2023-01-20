@@ -28,12 +28,7 @@ public class ProductsController : ControllerBase
     {
         var product = await _productsService.GetAsync(id);
 
-        if (product is null)
-        {
-            return NotFound();
-        }
-
-        return product;
+        return product ?? (ActionResult<Product>)NotFound();
     }
 
     [HttpPost]

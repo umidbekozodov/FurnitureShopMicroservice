@@ -20,6 +20,9 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+var context = app.Services.GetRequiredService<AppDbContext>();
+context.Database.Migrate();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
